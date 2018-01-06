@@ -92,6 +92,9 @@ let s:cincludes_mappings = {
 	\ 'realpath': ['stdlib.h'],
 	\ 'dirname': ['libgen.h'],
 	\ 'basename': ['libgen.h'],
+	\ 'inotify_init': ['sys/inotify.h'],
+	\ 'inotify_add_watch': ['sys/inotify.h'],
+	\ 'inotify_rm_watch': ['sys/inotify.h'],
 	\ }
 
 if exists('g:loaded_cincludes') || &compatible
