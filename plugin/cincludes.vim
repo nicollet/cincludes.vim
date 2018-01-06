@@ -32,6 +32,19 @@ let s:cincludes_mappings = {
 	\ 'mkdirat': ['fcntl.h', 'sys/stat.h'],
 	\ 'fork': ['unistd.h'],
 	\ 'clone': ['sched.h'],
+	\ 'getopt': ['unistd.h'],
+	\ 'getopt_long': ['getopt.h'],
+	\ 'getopt_long_only': ['getopt.h'],
+	\ '_exit': ['unistd.h'],
+	\ 'exit': ['stdlib.h'],
+	\ 'read': ['unistd.h'],
+	\ 'write': ['unistd.h'],
+	\ 'readv': ['uio.h'],
+	\ 'writev': ['uio.h'],
+	\ 'preadv': ['uio.h'],
+	\ 'pwritev': ['uio.h'],
+	\ 'preadv2': ['uio.h'],
+	\ 'pwritev2': ['uio.h'],
 	\ }
 
 
