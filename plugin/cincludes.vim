@@ -5,6 +5,17 @@
 "todo: automatically remove standard headers.
 "====================================================================
 
+" if exists('g:loaded_cincludes') || &compatible
+" 	finish
+" endif
+" let g:loaded_cincludes = 1
+"
+" if v:version < 700
+" 	echom "cincludes.vim needs vim >=7"
+" 	finish
+" endif
+
+
 let s:cincludes_mappings = {
 	\ 'open': ['sys/types.h', 'sys/stat.h', 'fcntl.h'],
 	\ 'creat': ['sys/types.h', 'sys/stat.h', 'fcntl.h'],
@@ -95,17 +106,9 @@ let s:cincludes_mappings = {
 	\ 'inotify_init': ['sys/inotify.h'],
 	\ 'inotify_add_watch': ['sys/inotify.h'],
 	\ 'inotify_rm_watch': ['sys/inotify.h'],
+	\ 'strcmp': ['string.h'],
+	\ 'strncmp': ['string.h'],
 	\ }
-
-if exists('g:loaded_cincludes') || &compatible
-	finish
-endif
-let g:loaded_cincludes = 1
-
-if v:version < 700
-	echom "cincludes.vim needs vim >=7"
-	finish
-endif
 
 function! s:addEntry(map, key, val)
 	if !has_key(a:map, a:key)
@@ -126,6 +129,31 @@ function! s:GetIncludes()
 endfunction
 
 
+" function! s:getIncludesFromFunctions()
+" 	let l:includes = {}
+" 	let l:oldPos = getcurpos()
+" 	call cursor(1,1)
+" 	while search('\w\+\s*(', 'cpWze',10000, 1000)
+" 		if s:IsComment(line('.'), col('.'))
+" 			continue
+" 		endif
+" 		let l:function = matchlist(getline('.'), '\(\w\+\)\s*(')
+" 		if l:function == []
+" 			continue
+" 		else
+" 			let l:function = l:function[1]
+" 		endif
+" 		echom l:function
+" 		if has_key(s:cincludes_mappings, l:function)
+" 			for l:inc in s:cincludes_mappings[l:function]
+" 				call s:addEntry(l:includes, l:inc, l:function)
+" 			endfor
+" 		endif
+" 	endwhile
+" 	call setpos('.', l:oldPos)
+" 	return l:includes
+" endfunction
+
 function! s:getIncludesFromFunctions()
 	let l:includes = {}
 	let l:oldPos = getcurpos()
@@ -134,17 +162,18 @@ function! s:getIncludesFromFunctions()
 		if s:IsComment(line('.'), col('.'))
 			continue
 		endif
-		let l:function = matchlist(getline('.'), '\(\w\+\)\s*(')
-		if l:function == []
-			continue
-		else
-			let l:function = l:function[1]
-		endif
-		if has_key(s:cincludes_mappings, l:function)
-			for l:inc in s:cincludes_mappings[l:function]
-				call s:addEntry(l:includes, l:inc, l:function)
-			endfor
-		endif
+
+		let l:funcs=[]
+		let l:line = getline('.')
+		call substitute(l:line, '\(\w\+\)\s*(', '\=add(l:funcs, submatch(1))', "g" )
+
+		for l:function in l:funcs
+			if has_key(s:cincludes_mappings, l:function)
+				for l:inc in s:cincludes_mappings[l:function]
+					call s:addEntry(l:includes, l:inc, l:function)
+				endfor
+			endif
+		endfor
 	endwhile
 	call setpos('.', l:oldPos)
 	return l:includes
