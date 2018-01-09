@@ -5,15 +5,15 @@
 "todo: automatically remove standard headers.
 "====================================================================
 
-" if exists('g:loaded_cincludes') || &compatible
-" 	finish
-" endif
-" let g:loaded_cincludes = 1
-"
-" if v:version < 700
-" 	echom "cincludes.vim needs vim >=7"
-" 	finish
-" endif
+if exists('g:loaded_cincludes') || &compatible
+	finish
+endif
+let g:loaded_cincludes = 1
+
+if v:version < 700
+	echom "cincludes.vim needs vim >=7"
+	finish
+endif
 
 
 let s:cincludes_mappings = {
@@ -127,6 +127,42 @@ let s:cincludes_mappings = {
 	\ 'sigprocmask': ['signal.h'],
 	\ 'sigpending': ['signal.h'],
 	\ 'sigaction': ['signal.h'],
+	\ 'crypt': ['unistd.h'],
+	\ 'sigsetjmp': ['setjmp.h'],
+	\ 'siglongjmp': ['setjmp.h'],
+	\ 'abort': ['stdlib.h'],
+	\ 'sigaltstack': ['signal.h'],
+	\ 'siginterrrupt': ['signal.h'],
+	\ 'sysv_signal': ['signal.h'],
+	\ 'getppid': ['unistd.h', 'sys/types.h'],
+	\ 'getpid': ['unistd.h', 'sys/types.h'],
+	\ 'perror': ['stdio.h'],
+	\ 'wait': ['sys/types.h', 'sys/wait.h'],
+	\ 'waitpid': ['sys/types.h', 'sys/wait.h'],
+	\ 'waitid': ['sys/types.h', 'sys/wait.h'],
+	\ 'sigqueue': ['signal.h'],
+	\ 'sigsuspend': ['signal.h'],
+	\ 'sigwaitingo': ['signal.h'],
+	\ 'sigtimedwait': ['signal.h'],
+	\ 'signalfd': ['sys/signalfd.h'],
+	\ 'setitimer': ['sys/time.h'],
+	\ 'getitimer': ['sys/time.h'],
+	\ 'alarm': ['unistd.h'],
+	\ 'nanosleep': ['time.h'],
+	\ 'clock_gettime': ['time.h'],
+	\ 'clock_getres': ['time.h'],
+	\ 'clock_settime': ['time.h'],
+	\ 'clock_getcpuclockid': ['time.h'],
+	\ 'pthreadh_getcpuclockid': ['pthread.h', 'time.h'],
+	\ 'clock_nanosleep': ['time.h'],
+	\ 'timer_create': ['signal.h', 'time.h'],
+	\ 'timer_settime': ['time.h'],
+	\ 'timer_gettime': ['time.h'],
+	\ 'timer_delete': ['time.h'],
+	\ 'timer_getoverrun': ['time.h'],
+	\ 'timerfd_create': ['sys/timerfd.h'],
+	\ 'timerfd_settime': ['sys/timerfd.h'],
+	\ 'timerfd_gettime': ['sys/timerfd.h'],
 	\ }
 
 function! s:addEntry(map, key, val)
@@ -221,6 +257,12 @@ endfunction
 function! s:findLine()
 	call cursor(1, 1)
 	let l:found = search('#include <', 'n', 10000, 1000) + 1
+	" add headers after #define _GNU_SOURCE
+	let l:GNU_SOURCE = search('#define _GNU_SOURCE', 'n', 10000, 1000) + 1
+	if l:GNU_SOURCE > l:found
+		let l:found = l:GNU_SOURCE
+	endif
+	let l:found = l:found + 1
 	" todo: what if there is only comments
 	while l:found <= line('$') && s:IsComment(l:found, 1)
 		let l:found += 1
